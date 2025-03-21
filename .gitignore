@@ -1,0 +1,5 @@
+./.vs
+./WIDNative/bin
+./WIDNative/obj/x64
+./WIDNative/obj/x86
+./WIDNative/obj/ARM64
