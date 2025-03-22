@@ -1,4 +1,5 @@
 .vs/
+enc_temp_folder/
 WIDNative/bin
 WIDNative/obj/x64
 WIDNative/obj/x86

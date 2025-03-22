@@ -7,29 +7,43 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Black">
 
-    <StackPanel
-        Orientation="Vertical"
-        Height="{Binding Height, ElementName=notingPage}"
-        Width="{Binding Width,ElementName=notingPage}"
-        >
-        <Grid
-            x:Name="drawingContainer"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Width="{Binding ActualWidth, ElementName=notingPage}"
-            Height="{Binding ActualHeight, ElementName=notingPage}"
-            Background="White"
-            >
-            <InkCanvas x:Name="drawingCanvas" />
-            <InkToolbar
+    <Grid
+         x:Name="zoomingContainer"
+         HorizontalAlignment="Stretch"
+         VerticalAlignment="Stretch"
+         Width="{Binding ActualWidth, ElementName=notingPage}"
+         Height="{Binding ActualHeight, ElementName=notingPage}"
+         Background="Black"
+         >
+         <ScrollViewer
+                ZoomMode="Enabled"
+                MinZoomFactor="0.5"
+                MaxZoomFactor="8"
+                HorizontalScrollBarVisibility="Hidden"
+                VerticalScrollBarVisibility="Hidden"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                >
+            <Grid
+                x:Name="drawingContainer"
+                Background="White"
+                Height="{Binding Width, ElementName=zoomingContainer}"
+                Width="{Binding Width, ElementName=zoomingContainer}"
+                >
+                <InkCanvas x:Name="drawingCanvas" />
+            </Grid>
+
+        </ScrollViewer>
+
+        <InkToolbar
             x:Name="inkToolbar"
             TargetInkCanvas="{x:Bind drawingCanvas}"
             Background="Black"
             VerticalAlignment="Center"
-            HorizontalAlignment="Left" 
+            HorizontalAlignment="Left"
+            Orientation="Vertical"
             />
-        </Grid>
-    </StackPanel>
+    </Grid>
 </Page>
