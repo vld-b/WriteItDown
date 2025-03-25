@@ -18,20 +18,22 @@
          Background="Black"
          >
          <ScrollViewer
-                ZoomMode="Enabled"
-                MinZoomFactor="0.5"
-                MaxZoomFactor="8"
-                HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Hidden"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                >
+             x:Name="drawingScrollView"
+             ZoomMode="Enabled"
+             MinZoomFactor="0.8"
+             MaxZoomFactor="8"
+             HorizontalScrollBarVisibility="Hidden"
+             VerticalScrollBarVisibility="Hidden"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+              >
             <Grid
                 x:Name="drawingContainer"
                 Background="White"
-                Height="{Binding Width, ElementName=zoomingContainer}"
-                Width="{Binding Width, ElementName=zoomingContainer}"
+                Height="{Binding ActualHeight, ElementName=zoomingContainer}"
+                Width="{Binding ActualWidth, ElementName=zoomingContainer}"
                 >
+                <Image x:Name="pageBackground" Source="/Assets/LockScreenLogo.png" />
                 <InkCanvas x:Name="drawingCanvas" />
             </Grid>
 

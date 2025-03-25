@@ -1,6 +1,12 @@
-﻿using Windows.UI.Core;
+﻿using System;
+using Windows.Data.Pdf;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Media.Imaging;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -21,10 +27,17 @@ namespace WIDNative
             inkPres.InputDeviceTypes = CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Pen;
             zoomingContainer.Width = this.ActualWidth;
             UpdatePenConfig();
+
+            const String path = "C:/Users/vladb/Downloads/A4_hoch_kariert_rand.pdf";
+            OpenPDF(path);
+
             this.SizeChanged += (s, e) =>
             {
                 zoomingContainer.Width = e.NewSize.Width;
                 zoomingContainer.Height = e.NewSize.Height;
+                //float sizeChangedFactor = (float)((e.NewSize.Width*e.NewSize.Height) / (e.PreviousSize.Width*e.PreviousSize.Height));
+                //drawingScrollView.MinZoomFactor = drawingScrollView.MinZoomFactor * sizeChangedFactor;
+                //drawingScrollView.MaxZoomFactor *= sizeChangedFactor;
             };
         }
 
@@ -39,6 +52,22 @@ namespace WIDNative
                 attributes.IgnoreTilt = false;
 
                 inkPres.UpdateDefaultDrawingAttributes(attributes);
+            }
+        }
+
+        private async void OpenPDF(String path)
+        {
+            StorageFile f = await StorageFile.GetFileFromPathAsync(path);
+            PdfDocument doc = await PdfDocument.LoadFromFileAsync(f);
+
+            PdfPage page = doc.GetPage(0);
+
+            using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+            {
+                BitmapImage bg = new BitmapImage();
+                await page.RenderToStreamAsync(stream);
+                await bg.SetSourceAsync(stream);
+                pageBackground.Source = bg;
             }
         }
     }
