@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Pdf;
+using Windows.Services.Maps;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -20,6 +25,7 @@ namespace WIDNative
     public sealed partial class MainPage : Page
     {
         private InkPresenter inkPres;
+        BitmapImage bg;
 
         public MainPage()
         {
@@ -29,11 +35,6 @@ namespace WIDNative
             inkPres.InputDeviceTypes = CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Pen;
             zoomingContainer.Width = this.ActualWidth;
             UpdatePenConfig();
-
-            this.Loaded += async (s, e) =>
-            {
-                await OpenPDF("C:/Users/vladb/Downloads/A4_hoch_kariert_rand.pdf");
-            };
 
             this.SizeChanged += (s, e) =>
             {
@@ -59,34 +60,44 @@ namespace WIDNative
             }
         }
 
-        private async Task<BitmapImage> OpenPDF(String path)
+        private async Task<BitmapImage> OpenPDF(StorageFile f)
         {
             try
             {
-                StorageFile f = await StorageFile.GetFileFromPathAsync(path);
                 PdfDocument doc = await PdfDocument.LoadFromFileAsync(f);
-            Console.WriteLine("Loaded PDF File");
 
-            PdfPage page = doc.GetPage(0);
-            Console.WriteLine("Loaded PDF Page");
+                PdfPage page = doc.GetPage(0);
 
-            using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
-            {
-                BitmapImage bg = new BitmapImage();
-                Console.WriteLine("Created Bitmap");
-                await page.RenderToStreamAsync(stream);
-                await bg.SetSourceAsync(stream);
-                Console.WriteLine("Configured BitMap");
-                pageBackground.Source = bg;
-                Console.WriteLine("Set Page Background");
-                return bg;
-            }
+                using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                {
+                    bg = new BitmapImage();
+                    bg.DecodePixelType = DecodePixelType.Physical;
+                    await page.RenderToStreamAsync(stream);
+                    await bg.SetSourceAsync(stream);
+                    pageBackground.Source = bg;
+                    return bg;
+                }
             } catch
             {
-                Console.WriteLine("Failed to load PDF File");
                 return null;
             }
 
+        }
+
+        private async void importFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            importFileBtn.IsChecked = false;
+            FileOpenPicker picker = new FileOpenPicker();
+
+            picker.ViewMode = PickerViewMode.List;
+            picker.SuggestedStartLocation = PickerLocationId.Downloads;
+            picker.FileTypeFilter.Add(".pdf");
+            picker.FileTypeFilter.Add(".png");
+            picker.FileTypeFilter.Add(".jpg");
+            picker.FileTypeFilter.Add(".jpeg");
+
+            StorageFile f = await picker.PickSingleFileAsync();
+            await OpenPDF(f);
         }
     }
 }

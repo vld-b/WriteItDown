@@ -29,7 +29,7 @@
               >
             <Grid
                 x:Name="drawingContainer"
-                Background="White"
+                Background="{ThemeResource SystemControlBackgroundChromeWhiteBrush}"
                 Height="{Binding ActualHeight, ElementName=zoomingContainer}"
                 Width="{Binding ActualWidth, ElementName=zoomingContainer}"
                 >
@@ -46,6 +46,10 @@
             VerticalAlignment="Center"
             HorizontalAlignment="Left"
             Orientation="Vertical"
-            />
+            >
+            <InkToolbarCustomToggleButton x:Name="importFileBtn" Click="importFileClick">
+                Import File
+            </InkToolbarCustomToggleButton>
+        </InkToolbar>
     </Grid>
 </Page>
