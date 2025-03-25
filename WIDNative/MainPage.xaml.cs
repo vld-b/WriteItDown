@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.Data.Pdf;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -6,6 +7,7 @@ using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media.Imaging;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -28,8 +30,10 @@ namespace WIDNative
             zoomingContainer.Width = this.ActualWidth;
             UpdatePenConfig();
 
-            const String path = "C:/Users/vladb/Downloads/A4_hoch_kariert_rand.pdf";
-            OpenPDF(path);
+            this.Loaded += async (s, e) =>
+            {
+                await OpenPDF("C:/Users/vladb/Downloads/A4_hoch_kariert_rand.pdf");
+            };
 
             this.SizeChanged += (s, e) =>
             {
@@ -55,20 +59,34 @@ namespace WIDNative
             }
         }
 
-        private async void OpenPDF(String path)
+        private async Task<BitmapImage> OpenPDF(String path)
         {
-            StorageFile f = await StorageFile.GetFileFromPathAsync(path);
-            PdfDocument doc = await PdfDocument.LoadFromFileAsync(f);
+            try
+            {
+                StorageFile f = await StorageFile.GetFileFromPathAsync(path);
+                PdfDocument doc = await PdfDocument.LoadFromFileAsync(f);
+            Console.WriteLine("Loaded PDF File");
 
             PdfPage page = doc.GetPage(0);
+            Console.WriteLine("Loaded PDF Page");
 
             using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
             {
                 BitmapImage bg = new BitmapImage();
+                Console.WriteLine("Created Bitmap");
                 await page.RenderToStreamAsync(stream);
                 await bg.SetSourceAsync(stream);
+                Console.WriteLine("Configured BitMap");
                 pageBackground.Source = bg;
+                Console.WriteLine("Set Page Background");
+                return bg;
             }
+            } catch
+            {
+                Console.WriteLine("Failed to load PDF File");
+                return null;
+            }
+
         }
     }
 }
