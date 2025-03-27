@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Windows.Data.Pdf;
 using Windows.Services.Maps;
@@ -85,7 +86,7 @@ namespace WIDNative
 
         }
 
-        private async void importFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void ImportFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             importFileBtn.IsChecked = false;
             FileOpenPicker picker = new FileOpenPicker();
@@ -98,18 +99,31 @@ namespace WIDNative
             picker.FileTypeFilter.Add(".jpeg");
 
             StorageFile f = await picker.PickSingleFileAsync();
+            if (f == null)
+                return;
+
             if (f.FileType.Equals(".pdf"))
                 await OpenPDF(f);
         }
 
-        private async void saveFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void SaveFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             saveFile.IsChecked = false;
             FileSavePicker picker = new FileSavePicker();
 
+            picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            picker.FileTypeChoices.Add("wid", new string[] { ".wid" });
+            picker.SuggestedFileName = "New Note";
             picker.CommitButtonText = "Save Note";
 
             StorageFile f = await picker.PickSaveFileAsync();
+
+            if (f == null)
+                return;
+
+            MemoryStream saveStream = new MemoryStream();
+            await inkPres.StrokeContainer.SaveAsync(saveStream.AsOutputStream());
+            await FileIO.WriteBytesAsync(f, saveStream.ToArray());
         }
     }
 }

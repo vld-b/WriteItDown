@@ -47,11 +47,11 @@
             HorizontalAlignment="Left"
             Orientation="Vertical"
             >
-            <InkToolbarCustomToggleButton x:Name="importFileBtn" Click="importFileClick">
+            <InkToolbarCustomToggleButton x:Name="importFileBtn" Click="ImportFileClick">
                 Import File
             </InkToolbarCustomToggleButton>
 
-            <InkToolbarCustomToggleButton x:Name="saveFile" Click="saveFileClick">
+            <InkToolbarCustomToggleButton x:Name="saveFile" Click="SaveFileClick">
                 Save Note
             </InkToolbarCustomToggleButton>
         </InkToolbar>
