@@ -71,7 +71,8 @@ namespace WIDNative
                 using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                 {
                     bg = new BitmapImage();
-                    bg.DecodePixelType = DecodePixelType.Physical;
+                    bg.DecodePixelHeight = (int)drawingContainer.Height;
+                    bg.DecodePixelType = DecodePixelType.Logical;
                     await page.RenderToStreamAsync(stream);
                     await bg.SetSourceAsync(stream);
                     pageBackground.Source = bg;
@@ -97,7 +98,18 @@ namespace WIDNative
             picker.FileTypeFilter.Add(".jpeg");
 
             StorageFile f = await picker.PickSingleFileAsync();
-            await OpenPDF(f);
+            if (f.FileType.Equals(".pdf"))
+                await OpenPDF(f);
+        }
+
+        private async void saveFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            saveFile.IsChecked = false;
+            FileSavePicker picker = new FileSavePicker();
+
+            picker.CommitButtonText = "Save Note";
+
+            StorageFile f = await picker.PickSaveFileAsync();
         }
     }
 }

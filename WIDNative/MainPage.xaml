@@ -20,8 +20,8 @@
          <ScrollViewer
              x:Name="drawingScrollView"
              ZoomMode="Enabled"
-             MinZoomFactor="0.8"
-             MaxZoomFactor="8"
+             MinZoomFactor="0.1"
+             MaxZoomFactor="10"
              HorizontalScrollBarVisibility="Hidden"
              VerticalScrollBarVisibility="Hidden"
              HorizontalAlignment="Stretch"
@@ -30,8 +30,8 @@
             <Grid
                 x:Name="drawingContainer"
                 Background="{ThemeResource SystemControlBackgroundChromeWhiteBrush}"
-                Height="{Binding ActualHeight, ElementName=zoomingContainer}"
-                Width="{Binding ActualWidth, ElementName=zoomingContainer}"
+                Height="3620"
+                Width="2560"
                 >
                 <Image x:Name="pageBackground" Source="/Assets/LockScreenLogo.png" />
                 <InkCanvas x:Name="drawingCanvas" />
@@ -49,6 +49,10 @@
             >
             <InkToolbarCustomToggleButton x:Name="importFileBtn" Click="importFileClick">
                 Import File
+            </InkToolbarCustomToggleButton>
+
+            <InkToolbarCustomToggleButton x:Name="saveFile" Click="saveFileClick">
+                Save Note
             </InkToolbarCustomToggleButton>
         </InkToolbar>
     </Grid>
