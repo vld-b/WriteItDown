@@ -146,4 +146,31 @@ namespace WIDNative
             await inkPres.StrokeContainer.LoadAsync(stream.AsInputStream());
         }
     }
+
+    public class NotingPage
+    {
+        BitmapImage bg; // Background image
+        ObservableCollection<InkStroke> strokes; // Ink strokes
+
+        public NotingPage(ObservableCollection<InkStroke> strokes)
+        {
+            this.strokes = strokes;
+        }
+
+        public NotingPage(ObservableCollection<InkStroke> strokes, BitmapImage bg)
+        {
+            this.bg = bg;
+            this.strokes = strokes;
+        }
+    }
+
+    public class NotingPageCollection : ObservableCollection<NotingPage>
+    {
+        ObservableCollection<NotingPage> pages;
+
+        public NotingPageCollection(ObservableCollection<NotingPage> pages)
+        {
+            this.pages = pages;
+        }
+    }
 }
