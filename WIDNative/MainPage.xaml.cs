@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -109,12 +110,14 @@ namespace WIDNative
         private async void SaveFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             saveFile.IsChecked = false;
-            FileSavePicker picker = new FileSavePicker();
+            FileSavePicker picker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                FileTypeChoices = { { "Ink File", new string[] { ".isf" } } },
+                SuggestedFileName = "New Note",
+                CommitButtonText = "Save Note",
+            };
 
-            picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            picker.FileTypeChoices.Add("wid", new string[] { ".wid" });
-            picker.SuggestedFileName = "New Note";
-            picker.CommitButtonText = "Save Note";
 
             StorageFile f = await picker.PickSaveFileAsync();
 
@@ -124,6 +127,23 @@ namespace WIDNative
             MemoryStream saveStream = new MemoryStream();
             await inkPres.StrokeContainer.SaveAsync(saveStream.AsOutputStream());
             await FileIO.WriteBytesAsync(f, saveStream.ToArray());
+        }
+
+        private async void OpenFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            openFile.IsChecked = false;
+
+            FileOpenPicker picker = new FileOpenPicker
+            {
+                ViewMode = PickerViewMode.List,
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                FileTypeFilter = { ".isf" }
+            };
+
+            StorageFile f = await picker.PickSingleFileAsync();
+
+            Stream stream = await f.OpenStreamForReadAsync();
+            await inkPres.StrokeContainer.LoadAsync(stream.AsInputStream());
         }
     }
 }

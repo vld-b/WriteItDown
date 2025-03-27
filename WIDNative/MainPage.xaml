@@ -54,6 +54,10 @@
             <InkToolbarCustomToggleButton x:Name="saveFile" Click="SaveFileClick">
                 Save Note
             </InkToolbarCustomToggleButton>
+
+            <InkToolbarCustomToggleButton x:Name="openFile" Click="OpenFileClick">
+                Open Note
+            </InkToolbarCustomToggleButton>
         </InkToolbar>
     </Grid>
 </Page>
