@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Windows.Data.Pdf;
-using Windows.Services.Maps;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -26,7 +20,7 @@ namespace WIDNative
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private InkPresenter inkPres;
+        private readonly InkPresenter inkPres;
         BitmapImage bg;
 
         public MainPage()
@@ -62,7 +56,7 @@ namespace WIDNative
             }
         }
 
-        private async Task<BitmapImage> OpenPDF(StorageFile f)
+        private async Task OpenPDF(StorageFile f)
         {
             try
             {
@@ -78,13 +72,27 @@ namespace WIDNative
                     await page.RenderToStreamAsync(stream);
                     await bg.SetSourceAsync(stream);
                     pageBackground.Source = bg;
-                    return bg;
                 }
             } catch
             {
-                return null;
+                return;
             }
 
+        }
+
+        private async Task OpenImage(StorageFile f)
+        {
+            if (f == null)
+                return;
+
+            BitmapImage bmI = new BitmapImage(new Uri(f.Path));
+            IRandomAccessStream memStream = f.OpenStreamForReadAsync().Result.AsRandomAccessStream();
+            await bmI.SetSourceAsync(memStream);
+            if (bmI == null)
+                return;
+            pageBackground.Source = bmI;
+            Debug.WriteLine("Setting source");
+            Debug.WriteLine(pageBackground.Source);
         }
 
         private async void ImportFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -105,6 +113,8 @@ namespace WIDNative
 
             if (f.FileType.Equals(".pdf"))
                 await OpenPDF(f);
+            else
+                await OpenImage(f);
         }
 
         private async void SaveFileClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -142,35 +152,11 @@ namespace WIDNative
 
             StorageFile f = await picker.PickSingleFileAsync();
 
+            if (f == null)
+                return;
+
             Stream stream = await f.OpenStreamForReadAsync();
             await inkPres.StrokeContainer.LoadAsync(stream.AsInputStream());
-        }
-    }
-
-    public class NotingPage
-    {
-        BitmapImage bg; // Background image
-        ObservableCollection<InkStroke> strokes; // Ink strokes
-
-        public NotingPage(ObservableCollection<InkStroke> strokes)
-        {
-            this.strokes = strokes;
-        }
-
-        public NotingPage(ObservableCollection<InkStroke> strokes, BitmapImage bg)
-        {
-            this.bg = bg;
-            this.strokes = strokes;
-        }
-    }
-
-    public class NotingPageCollection : ObservableCollection<NotingPage>
-    {
-        ObservableCollection<NotingPage> pages;
-
-        public NotingPageCollection(ObservableCollection<NotingPage> pages)
-        {
-            this.pages = pages;
         }
     }
 }
